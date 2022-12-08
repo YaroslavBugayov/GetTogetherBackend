@@ -42,7 +42,6 @@ class RegisterController(private val call: ApplicationCall) {
 
             Tokens.insert(
                 TokenDTO(
-                    id = UUID.randomUUID().toString(),
                     login = registerReceiveRemote.login,
                     token = token
                 )

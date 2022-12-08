@@ -19,10 +19,12 @@ class LoginController(private val call: ApplicationCall) {
             call.respond(HttpStatusCode.BadRequest, "User not found")
         } else {
             if (userDTO.password == loginReceiveRemote.password) {
+                if (userDTO.login == loginReceiveRemote.login) {
+                    Tokens.delete(loginReceiveRemote.login)
+                }
                 val token = UUID.randomUUID().toString()
                 Tokens.insert(
                     TokenDTO(
-                        id = UUID.randomUUID().toString(),
                         login = loginReceiveRemote.login,
                         token = token
                     )
