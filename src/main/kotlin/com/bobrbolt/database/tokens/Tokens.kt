@@ -4,24 +4,41 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object Tokens: Table() {
-    private val login = Tokens.varchar("login", 25)
-    private val token = Tokens.varchar("token", 75)
+    val id = Tokens.integer("id").uniqueIndex()
+    val userId = Tokens.integer("userid")
+    val token = Tokens.varchar("token", 75)
 
-    fun insert(tokenDTO: TokenDTO) {
+    fun insert(userIdInput: Int, tokenInput: String) {
         transaction {
             Tokens.insert {
-                it[login] = tokenDTO.login
-                it[token] = tokenDTO.token
+                it[userId] = userIdInput
+                it[token] = tokenInput
             }
         }
     }
 
-    fun delete(login: String) {
+    fun delete(userId: Int) {
         transaction {
-            Tokens.deleteWhere { Tokens.login.eq(login) }
+            Tokens.deleteWhere { Tokens.userId.eq(userId) }
+        }
+    }
+
+    fun getToken(userId: Int): TokenDTO? {
+        return try {
+            transaction {
+                val tokenModel = Tokens.select { Tokens.userId.eq(userId) }.single()
+                TokenDTO(
+                    id = tokenModel[Tokens.id],
+                    userId = tokenModel[Tokens.userId],
+                    token = tokenModel[token]
+                )
+            }
+        } catch (e: Exception) {
+            null
         }
     }
 

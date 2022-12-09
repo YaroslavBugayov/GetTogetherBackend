@@ -2,6 +2,7 @@ package com.bobrbolt
 
 import com.bobrbolt.features.login.configureLoginRouting
 import com.bobrbolt.features.register.configureRegisterRouting
+import com.bobrbolt.features.token.configureTokenRouting
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.cio.*
@@ -24,4 +25,5 @@ fun Application.module() {
     configureLoginRouting()
     configureRegisterRouting()
     configureSerialization()
+    configureTokenRouting()
 }

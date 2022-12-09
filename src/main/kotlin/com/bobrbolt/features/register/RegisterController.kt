@@ -1,8 +1,6 @@
 package com.bobrbolt.features.register
 
-import com.bobrbolt.database.tokens.TokenDTO
 import com.bobrbolt.database.tokens.Tokens
-import com.bobrbolt.database.users.UserDTO
 import com.bobrbolt.database.users.Users
 import com.bobrbolt.utils.isValidEmail
 import io.ktor.http.*
@@ -27,25 +25,12 @@ class RegisterController(private val call: ApplicationCall) {
             val token = UUID.randomUUID().toString()
 
             try {
-                Users.insert(
-                    UserDTO(
-                        login = registerReceiveRemote.login,
-                        password = registerReceiveRemote.password,
-                        username = registerReceiveRemote.login,
-                        email = registerReceiveRemote.email
-                    )
-                )
+                Users.insert(registerReceiveRemote)
             } catch (e: PSQLException) {
                 call.respond(HttpStatusCode.Conflict, "User already exists")
             }
 
-
-            Tokens.insert(
-                TokenDTO(
-                    login = registerReceiveRemote.login,
-                    token = token
-                )
-            )
+            Tokens.insert(Users.fetchUser(registerReceiveRemote.login)!!.id, token)
 
             call.respond(RegisterResponseRemote(token = token))
         }

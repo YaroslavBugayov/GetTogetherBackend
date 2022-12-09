@@ -1,6 +1,7 @@
 package com.bobrbolt.database.tokens
 
 class TokenDTO (
-    val login: String,
+    val id: Int,
+    val userId: Int,
     val token: String
     )

@@ -1,23 +1,23 @@
 package com.bobrbolt.database.users
 
+import com.bobrbolt.features.register.RegisterReceiveRemote
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object Users: Table("users") {
-    private val login = Users.varchar("login", 25)
-    private val password = Users.varchar("password", 50)
-    private val username = Users.varchar("username", 30)
-    private val email = Users.varchar("email", 50)
+    val id = Users.integer("id").uniqueIndex()
+    val login = Users.varchar("login", 25)
+    val password = Users.varchar("password", 50)
+    val email = Users.varchar("email", 50)
 
-    fun insert(userDTO: UserDTO) {
+    fun insert(registerReceiveRemote: RegisterReceiveRemote) {
         transaction {
             Users.insert {
-                it[login] = userDTO.login
-                it[password] = userDTO.password
-                it[username] = userDTO.username
-                it[email] = userDTO.email ?: ""
+                it[login] = registerReceiveRemote.login
+                it[password] = registerReceiveRemote.password
+                it[email] = registerReceiveRemote.email ?: ""
             }
         }
     }
@@ -27,15 +27,14 @@ object Users: Table("users") {
             transaction {
                 val userModel = Users.select { Users.login.eq(login) }.single()
                 UserDTO(
+                    id = userModel[Users.id],
                     login = userModel[Users.login],
                     password = userModel[password],
-                    username = userModel[username],
                     email = userModel[email]
                 )
             }
         } catch (e: Exception) {
             null
         }
-
     }
 }

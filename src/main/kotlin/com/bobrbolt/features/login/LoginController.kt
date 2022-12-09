@@ -1,6 +1,5 @@
 package com.bobrbolt.features.login
 
-import com.bobrbolt.database.tokens.TokenDTO
 import com.bobrbolt.database.tokens.Tokens
 import com.bobrbolt.database.users.Users
 import io.ktor.http.*
@@ -20,20 +19,14 @@ class LoginController(private val call: ApplicationCall) {
         } else {
             if (userDTO.password == loginReceiveRemote.password) {
                 if (userDTO.login == loginReceiveRemote.login) {
-                    Tokens.delete(loginReceiveRemote.login)
+                    Tokens.delete(userDTO.id)
                 }
                 val token = UUID.randomUUID().toString()
-                Tokens.insert(
-                    TokenDTO(
-                        login = loginReceiveRemote.login,
-                        token = token
-                    )
-                )
+                Tokens.insert(userDTO.id, token)
                 call.respond(LoginResponseRemote(token = token))
             } else {
                 call.respond(HttpStatusCode.BadRequest, "Invalid password")
             }
         }
     }
-
 }
