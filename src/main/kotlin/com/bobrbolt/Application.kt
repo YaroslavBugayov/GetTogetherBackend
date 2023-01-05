@@ -6,7 +6,9 @@ import com.bobrbolt.features.token.configureTokenRouting
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.cio.*
+import io.ktor.server.plugins.cors.*
 import com.bobrbolt.plugins.*
+import io.ktor.http.*
 import org.jetbrains.exposed.sql.Database
 
 fun main() {
@@ -21,6 +23,17 @@ fun main() {
 }
 
 fun Application.module() {
+    install(CORS){
+        allowMethod(HttpMethod.Get)
+        allowMethod(HttpMethod.Post)
+        allowHeader(HttpHeaders.AccessControlAllowHeaders)
+        allowHeader(HttpHeaders.ContentType)
+        allowHeader(HttpHeaders.AccessControlAllowOrigin)
+        allowHeader(HttpHeaders.Cookie)
+        allowCredentials = true
+        maxAgeInSeconds = 1
+        anyHost()
+    }
     configureRouting()
     configureLoginRouting()
     configureRegisterRouting()

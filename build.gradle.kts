@@ -40,4 +40,8 @@ dependencies {
 
     // Postgresql
     implementation("org.postgresql:postgresql:42.5.1")
+
+    // CORS
+    implementation("io.ktor:ktor-server-cors:$ktor_version")
+
 }
